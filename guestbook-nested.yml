@@ -1,0 +1,26 @@
+# Bootstrapping ArgoCD
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook-nested
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+project: default
+source:
+  repoURL: https://github.com/argoproj/argocd-example-apps
+  path: guestbook
+  targetRevision: master
+  directory:
+    recurse: true
+    jsonnet: {}
+destination:
+  server: https://kubernetes.default.svc
+  namespace: guestbook-nested
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+  syncOptions:
+    - CreateNamespace=true
