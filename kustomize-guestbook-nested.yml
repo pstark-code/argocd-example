@@ -1,0 +1,24 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kustomize-guestbook-nested
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+project: default
+source:
+  repoURL: https://github.com/argoproj/argocd-example-apps.git
+  path: kustomize-guestbook
+  targetRevision: master
+  kustomize:
+    nameSuffix: '-nested'
+destination:
+  server: https://kubernetes.default.svc
+  namespace: kustomize-guestbook-nested
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+  syncOptions:
+    - CreateNamespace=true
