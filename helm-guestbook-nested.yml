@@ -1,0 +1,30 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: helm-guestbook-nested
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+project: default
+source:
+  repoURL: https://github.com/argoproj/argocd-example-apps.git
+  path: helm-guestbook
+  targetRevision: master
+  helm:
+    valueFiles:
+      - values-production.yaml
+    parameters:
+      - name: ingress.enabled
+        value: 'true'
+      - name: ingress.hosts[0]
+        value: helm-guestbook.talos.pstark.ch
+destination:
+  server: https://kubernetes.default.svc
+  namespace: helm-guestbook-nested
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+  syncOptions:
+    - CreateNamespace=true
